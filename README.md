@@ -358,6 +358,100 @@ category
 - **Why remove non-beats?** Non-beats (e.g., noise, pacing signals) aren’t relevant for detecting heart-related anomalies, so they’re excluded.
 - **Why categorize?** The autoencoder needs to distinguish normal (0) from abnormal (1) beats. This step prepares the labels.
 - **Imbalance**: Normal beats often outnumber abnormal ones, a common challenge in ECG research that you’ll address in your PhD.
+- 
+
+
+### Detailed Explanation of Each Symbol List
+
+#### 1. **Non-Beat Symbols**
+```python
+nonbeat = ['[','!',']','x','(',')','p','t','u','`',
+           '\'','^','|','~','+','s','T','*','D','=','"','@','Q','?']
+```
+
+**What Are Non-Beat Symbols?**
+- These symbols represent **events that are not heartbeats** in the ECG signal. They include artifacts, noise, pacing signals, or other non-cardiac events.
+- In the MIT-BIH Arrhythmia Database, these are annotations for things like:
+  - **Noise or artifacts**: Signals caused by movement, electrode issues, or external interference (e.g., `~` for noise).
+  - **Pacing signals**: Artificial signals from a pacemaker (e.g., `[` or `]` for pacing markers).
+  - **Other events**: Comments or undefined events (e.g., `?`).
+- **Examples of Non-Beat Symbols**:
+  - `[`, `]`: Indicate the start/end of a pacing spike (from a pacemaker).
+  - `~`: Noise or baseline drift in the ECG signal.
+  - `p`: Paced beat (a heartbeat triggered by a pacemaker).
+  - `Q`, `?`: Unclassified or questionable events.
+- **Role in the Script**:
+  - Non-beat symbols are **excluded** from the dataset because the autoencoder focuses on detecting anomalies in actual heartbeats (normal or abnormal).
+  - The script later filters out these symbols using:
+    ```python
+    dataframe = dataframe.loc[~((dataframe['category']==-1))]
+    ```
+    This ensures only heartbeat-related data (normal or abnormal) is used for training and testing.
+
+**Example**:
+- Imagine an ECG signal with a spike caused by a patient moving, labeled as `~`. This isn’t a heartbeat, so it’s marked as a non-beat (`category = -1`) and removed from the analysis.
+- In a 30-minute ECG recording, you might find 100 `~` symbols due to noise, but these won’t help the autoencoder learn about heartbeats, so they’re ignored.
+---
+
+#### 2. **Abnormal Beat Symbols**
+```python
+abnormal = ['L','R','V','/','A','f','F','j','a','E','J','e','S']
+```
+
+**What Are Abnormal Beat Symbols?**
+- These symbols represent **arrhythmic heartbeats** (abnormal beats) that deviate from a normal heart rhythm. Arrhythmias are irregular or abnormal heartbeats that may indicate heart conditions.
+- Each symbol corresponds to a specific type of arrhythmia, as defined by the MIT-BIH database (based on AAMI standards). Here’s what each symbol means:
+  - **L**: Left bundle branch block beat (abnormal conduction in the left heart).
+  - **R**: Right bundle branch block beat (abnormal conduction in the right heart).
+  - **V**: Premature ventricular contraction (PVC, an early ventricular beat).
+  - **/**: Paced beat (often considered abnormal in natural heart rhythm analysis).
+  - **A**: Atrial premature beat (early atrial contraction).
+  - **f**: Fusion of ventricular and normal beat (a mix of normal and abnormal).
+  - **F**: Fusion of paced and normal beat.
+  - **j**: Nodal (junctional) escape beat (backup pacemaker in the AV node).
+  - **a**: Aberrated atrial premature beat (distorted atrial beat).
+  - **E**: Ventricular escape beat (backup ventricular beat).
+  - **J**: Nodal (junctional) premature beat.
+  - **e**: Atrial escape beat.
+  - **S**: Supraventricular premature beat (originates above the ventricles).
+- **Role in the Script**:
+  - These are labeled as `category = 1` in the DataFrame:
+    ```python
+    dataframe.loc[dataframe.symbol.isin(abnormal), 'category'] = 1
+    ```
+  - Abnormal beats are used to test the autoencoder’s ability to detect anomalies. Since the autoencoder is trained on normal beats (`N`), it should have a higher reconstruction error for these abnormal beats, indicating an anomaly.
+- **Characteristics**:
+  - Abnormal beats have different ECG waveforms (e.g., wider QRS complex for PVCs, missing P waves for junctional beats).
+  - They are less common than normal beats, leading to an imbalanced dataset (e.g., 90,000 normal vs. 10,000 abnormal beats).
+
+**Example**:
+- A **V** (premature ventricular contraction) is an early heartbeat originating from the ventricles, often seen as a wide, bizarre QRS complex on the ECG. In the script, a segment labeled `V` is marked as `category = 1` and used to evaluate if the autoencoder flags it as an anomaly due to poor reconstruction.
+- Suppose a patient’s ECG has 50 `V` beats. These are extracted as 140-point segments and labeled as abnormal for testing.
+
+---
+
+#### 3. **Normal Beat Symbols**
+```python
+normal = ['N']
+```
+
+**What Are Normal Beat Symbols?**
+- The `N` symbol represents a **normal sinus rhythm heartbeat**, which is a healthy, regular heartbeat originating from the sinoatrial (SA) node.
+- **Characteristics**:
+  - A normal ECG beat includes a P wave (atrial contraction), QRS complex (ventricular contraction), and T wave (ventricular relaxation).
+  - It has a consistent shape and timing, with a heart rate typically 60–100 beats per minute.
+- **Role in the Script**:
+  - Normal beats are labeled as `category = 0`:
+    ```python
+    dataframe.loc[dataframe.symbol == 'N', 'category'] = 0
+    ```
+  - The autoencoder is **trained on normal beats** (`normal_train_data`) to learn their patterns. It should reconstruct these beats with low error, while abnormal beats (or non-beats, if not filtered) will have higher errors.
+- **Why only `N`?** In the MIT-BIH Arrhythmia Database, `N` is the standard annotation for a normal sinus rhythm beat. Other datasets might use additional symbols for normal beats, but this script simplifies to `N`.
+
+**Example**:
+- A normal beat (`N`) in a patient’s ECG might occur 2,000 times in a 30-minute recording. Each `N` beat is extracted as a 140-point segment, labeled `category = 0`, and used to train the autoencoder to recognize the typical ECG waveform (e.g., clear P, QRS, T waves).
+- The autoencoder learns to reconstruct these normal segments accurately, so any deviation (e.g., an abnormal `V` beat) results in a high reconstruction error, flagging it as an anomaly
+
 
 ---
 
