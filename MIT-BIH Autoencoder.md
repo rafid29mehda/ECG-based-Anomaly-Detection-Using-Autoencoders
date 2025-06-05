@@ -1,32 +1,5 @@
 ### Step-by-Step Guide 
 
-#### Step 0: Set Up Google Colab
-**What to Do:**
-1. **Open Google Colab**:
-   - Go to [colab.google](https://colab.google/) in the web browser.
-   - Sign in with a Google account (create one if we don’t have it).
-   - Click **New Notebook** to create a blank notebook.
-2. **Rename the Notebook**:
-   - Click the default name (e.g., “Untitled0.ipynb”) at the top and rename it to something like `ECG_Anomaly_Detection.ipynb` for clarity.
-3. **Understand the Interface**:
-   - Colab has cells where we’ll paste code or text. Each cell can be **Code** (for Python) or **Text** (for markdown/notes).
-   - To add a cell, click the `+ Code` or `+ Text` button at the top.
-   - To run a code cell, click the play button (▶) or press `Shift + Enter`.
-4. **Set Up Runtime**:
-   - Click **Runtime** > **Change runtime type** > Select **GPU** under Hardware accelerator (this speeds up neural network training).
-   - Click **Save**.
-
-**Why?**
-- Colab provides a free environment with pre-installed libraries and GPU support, ideal for machine learning.
-- Renaming helps organize the work, especially for PhD research.
-- Using a GPU makes training the autoencoder faster.
-
-**What to Expect**:
-- A blank notebook with a code cell ready for the first piece of code.
-- The runtime type will show “GPU” in the top-right corner (e.g., “Connected to T4 GPU”).
-
----
-
 #### Step 1: Install Required Libraries
 **What to Do:**
 1. Create a new code cell by clicking `+ Code`.
