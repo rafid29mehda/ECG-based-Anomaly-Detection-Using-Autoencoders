@@ -1,43 +1,16 @@
 ### Step-by-Step Guide 
 
 #### Step 1: Install Required Libraries
-**What to Do:**
-1. Create a new code cell by clicking `+ Code`.
-2. Copy and paste the following code into the cell:
+
 ```python
 !pip install wfdb
 !pip install matplotlib==3.1.3
 ```
-3. Run the cell by clicking the play button or pressing `Shift + Enter`.
+
 
 **Explanation:**
 - **`!pip install wfdb`**: Installs the `wfdb` (WaveForm DataBase) library, which reads MIT-BIH dataset files (`.dat` for signals, `.atr` for annotations, `.hea` for metadata). This is essential for loading ECG data.
 - **`!pip install matplotlib==3.1.3`**: Installs version 3.1.3 of `matplotlib`, a library for plotting ECG signals and results. The specific version ensures compatibility with the script.
-- **Why `!`?** In Colab, `!` runs shell commands (like installing packages) in the Linux environment.
-- **Note**: The original script had a typo (`pip install` without `!`). I’ve corrected it here.
-
-**Why This Step?**
-- These libraries are not pre-installed in Colab, so we need to install them before running the script.
-- `wfdb` is critical for ECG data processing, and `matplotlib` visualizes the results, which is key for understanding ECG patterns in the PhD research.
-
-**What to Expect**:
-- Colab will download and install the libraries, showing output like:
-  ```
-  Collecting wfdb
-    Downloading wfdb-4.1.2-py3-none-any.whl (159 kB)
-  ...
-  Successfully installed wfdb-4.1.2
-  Collecting matplotlib==3.1.3
-    Downloading matplotlib-3.1.3-cp37-cp37m-manylinux1_x86_64.whl (13.1 MB)
-  ...
-  Successfully installed matplotlib-3.1.3
-  ```
-- If we see errors, ensure the internet connection is active, as Colab needs to download packages.
-
-**For Beginners**:
-- **Library**: A collection of pre-written code (e.g., `wfdb` for reading ECG files, `matplotlib` for plotting).
-- **Why specific version?** Older versions like `matplotlib==3.1.3` avoid compatibility issues with other libraries in the script.
-- **Tip**: If we rerun the notebook later, we may not need to reinstall unless we reset the runtime (Runtime > Disconnect and delete runtime).
 
 ---
 
